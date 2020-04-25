@@ -588,7 +588,7 @@ A Red-Black Tree is a Binary Search Tree in which the following four properties 
 3. If a node is red, all of its children must be black (i.e., we can’t have a red node with a red child)
 4. For any given node u, every possible path from u to a "null reference" (i.e., an empty left or right child) must contain the same number of black nodes
 
-## Red-Black Tree Insertion
+### Red-Black Tree Insertion
 
 1. Perform regular BST Insertion
 	- If you see black node with 2 red children, recolor all 3
@@ -639,8 +639,8 @@ Ans: ABCDE
 Set: Red-Black Tree
 Unorder_Set: Hash Table
 
-
-### What is the worst-case time complexity of the find/insert/remove function defined in the previous pseudocode, ignoring the time it takes to compute an element's hash value?
+### Exercise
+#### What is the worst-case time complexity of the find/insert/remove function defined in the previous pseudocode, ignoring the time it takes to compute an element's hash value?
 
 - O(1)
 - O(log n)
@@ -650,3 +650,209 @@ Unorder_Set: Hash Table
 - Not enough information
 
 Ans: C
+
+
+
+# Lecture 11 Multiway Tries
+
+- Trie: Tree structure in which elements are represented by paths 
+- Multiway Tries: Trie in which nodes can have more than 2 children
+
+## MWT Insert, Find, and Remove
+
+### Find
+
+1. Start at the root at the first letter
+2. For each letter in my word, does my current node have a child edge labeled by  that letter
+3. If it does, traverse it; if it doesn't, that word does not exist in my tree
+4. Once I finish every single letter in my word, if the current node that I'm at happens to be a word node, return true; otherwise, return false
+
+### Insert
+
+1. Start at the root, start at the first letter 
+2. For each letter in my word, does my current node have a child labeled by that letter
+3. If it doesn't, create one, and then traverse down
+4. When I finish, mark my current node as a word node
+
+1. Attempt to follow the find algorithm
+2. If, at any point, the edge we need to traverse does not exist, simply create the edge (and node to which it should point), and continue
+
+### Remove
+
+1. Follow the find algorithm
+2. If the find algorithm fails, the word does not exist in the trie, meaning nothing has to be done
+3. If the find algorithm succeeds, simply remove the "word node" label from the node at which the find algorithm terminates
+
+
+## MWT Complexity
+
+n = number of words
+k = length of longest word
+
+- Time Complexity: O(k)
+- Space Complexity: O(n^k) 
+
+
+## Cool Algorithms on MWTs
+
+- Iterate in ascending order: preorder, iterate over children ascending
+- Iterate in descending order: postorder, iterate over children descending
+- Iterate in increasing order: preorder, level-order traversel
+- Autocomplete: find, traversal from node I end at
+
+
+### Question
+
+#### BST vs MWT height
+
+In Q3, we saw that a (well-balanced) BST and MWT can have different heights when populated with the same set of words.
+
+This is not always true. Let's say we have an alphabet of `X` characters, and we're inserting all strings of length `D` (i.e. we're inserting X^D strings).
+
+For a BST and MWT to have the same height, which of the following must be true about the words being inserted? Select one or more options (⌈⌉ and ⌊⌋ represent the ceiling and floor operators).
+
+- X = 1
+- D >= X
+- ⌈log_2(X^D)⌉ = D
+- ⌊log_2(X^D)⌋ = D
+- X <= 2
+- None of the above
+
+Ans: C
+
+
+# Lecture 12 Ternary Search Trees (TSTs)
+
+A middle-ground between the Binary Search Tree and the Multiway Trie. 
+
+The Ternary Search Tree (TST) is a type of trie in which nodes are arranged in a manner similar to a Binary Search Tree, but with up to three children rather than the binary tree's limit of two. 
+
+Just like in a Binary Search Tree, for every node u, the left child of u must have a value less than u, and the right child of u must have a value greater than u. The middle child of u represents the next character in the current word.
+
+(If the next step is not going down, do not count this word in)
+
+
+## TST Algorithms
+
+### TST Find
+
+- current node = root
+- c = first letter of query
+- if c > current node's letter:
+	- traverse to right child
+- else if c < current node's letter:
+	- traverse to left child
+- else:
+	- If c is last letter of query and current node is "word" node:
+		- success!
+	- else:
+		- traverse to middle child and go to next letter in query
+
+### TST Insert
+
+- Perform TST Find
+- If you every need to traverse to a child that doesn't exist, simply create it and traverse
+- Make the last node in the traversal a "word" node
+
+### TST Remove
+
+- Perform TST Find
+- Make the last node in the traversal not a "word" node
+
+
+## TST Time Complexity
+
+- Worst case: O(n)
+- Average case: O(n)
+
+
+## Tree Summary
+
+1. Balanced Binary Search Tree: AVL Tree or Red-Black Tree
+- **Most space-efficient**
+- **Worst case time complexity**: O(logn)
+- Able to iterate over the elements of the lexicon in **alphabetical order**
+
+2. Hash Table
+- Not quite as space-efficient as a Binary Search Tree (but not too bad)
+- **Average-case time complexity**: O(k)
+- **Worst-case time complexity**: O(n)
+- Unordered, no clean way of iterating through the elements of our lexicon in a meaningful order
+
+3. Multiway Trie
+- Most **time-efficient** we can get in worst case: O(k)
+- **Extremely inefficient memory-wise**
+- Able to iterate over the elements of the lexicon in **alphabetical order**
+- Can perform **auto-complete** by performing a simple pre-order traversal
+
+4. Ternary Search Tree
+
+
+# Lecture 13 Hashing, Hash Tables, Hash Maps, and Collisions
+
+## Hash Functions
+
+- Input: An object x
+- Output: An integer representation of x
+
+#### Hash function property
+
+- Requirement of all valid hash functions:
+	- Property of Equality: Given two keys k and l, if k and l are equal, h(k) must equal h(l). In other words, if two keys are equal, they must have the same hash value
+-- hash function that fulfills requirement is call "good" hash function --
+- A feature that would be "nice to have" if at all possible, but not necessary:
+	- Property of Inequality: Given two keys k and l, if k and l are not equal, it would be nice if h(k) was not equal to h(l). In other words, if two keys are not equal, it would be nice (but not necessary!) for them to have different hash values
+-- hash function that fulfills requirement and feature is call "perfect" hash function --
+
+#### Hash function Time Compelxity
+
+if a given object key has k elements (e.g. a string with k characters, or a list with k numbers), a good hash function for key will incorporate each of key's k elements into key﻿'s hash value, meaning a good hash function would be O(k).
+
+- Average-case time complexity for insert and find: O(1)
+- Worst-case time complexity for insert and find: O(n)
+
+## Hash Table and Hash Maps
+
+Hash Table can be thought as a collection of items that, on average, can be retrieved really fast. A Hash Table is implemented by an array, and more formally, we define a Hash Table to be an array of size M (which we call the Hash Table's capacity) that stores keys k by using a hash function to compute an index in the array at which to store k.
+
+- Hash Table: implements the Set ADT
+- Hash Map: implements the Map ADT
+
+
+## Probability of At Least 1 Collision
+
+Insert N keys into M slots:
+
+P_N,M(>= 1 collision) = 1 - P_N,M(0 collision)
+P_N,M(0 collision) = 1 * (M-1)/M * (M-2)/M * ... (M-N+1)/M
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
