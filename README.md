@@ -121,279 +121,7 @@ int main() {
 }
 ```
 
-# Lecture 19: Coding Trees and Entropy
 
-## Information vs. Data	
-
-- Information: Content of some message, tell us detail(s) about some system(s)
-
-- Data: Raw unit of information, representation (or encoding) of information
-
-## Entropy
-
-- Entropy: Mesaure of disorder (non-uniformity) of a system
-- Shannon Entropy: Expected value (average) of the information contained in some data
-
-# Lecture 20: Huffman Coding
-
-## Prefix Codes
-
-- Prefix Codes: An encoding in which no symbol is represented by a code that is a prefix of the code representing another symbol
-
-<img src="https://imgur.com/J7uDhYY.png" style="zoom:50%;" />
-
->  Letter located at the leaves
-
-## Huffman Coding
-
-We have a set of *n* possible items and we want to represent them uniquely. We could construct a **balanced binary tree** of height ⌈log₂(*n*)⌉
-
-#### Which of the following statements about Huffman compression are true?
-
-A header must be added to the compressed file to provide enough information so that the recipient can reconstruct the same coding tree that was used to encode the file
-
-The Huffman algorithm always generates a balanced binary tree to ensure ⌈log₂(n)⌉ symbol encoding length
-
-The Huffman algorithm takes into account symbol frequencies when deciding how to encode symbols
-
-Ans: AC
-
-## Huffman Tree Construction
-
-1. Compute the frequencies of all symbols that appear in the input
-2. Start with a "forest" of single-node trees, one for each symbol that appeared in the input (ignore symbols with count 0, since they don't appear at all in the input)
-3. While there is more than 1 tree in the forest:
-   1. Remove the two trees (T1 and T2) from the forest that have the lowest count contained in their roots
-   2. Create a new node that will be the root of a new tree. This new tree will have T1 and T2 as left and right subtrees. The count in the root of this new tree will be the sum of the counts in the roots of T1 and T2. Label the edge from this new root to T1 as "1" and label the edge from this new root to T2 as "0"
-   3. Insert this new tree in the forest, and go back to the While statement
-4. Return the one tree in the forest as the Huffman tree
-
-
-
-Message: AAAAABBAHHBCBGCCC
-
-<img src="https://imgur.com/iUZR20m.png" style="zoom:50%;" />
-
-
-
-## Huffman Tree Message Encoding
-
-For each symbol in the message, output the sequence of bits given by 1's and 0's on the path from the root of the tree to that symbol. 
-
-## Huffman Tree Message Decoding
-
-1. Start with the first bit in the coded message, and start with the root of the code tree
-
-2. As you read each bit, move to the left or right child of the current node, matching the bit just read with the label on the edge
-
-3. When you reach a leaf, output the symbol stored in the leaf, return to the root, and continue
-
-
-
-#  Lecture 21: Bitwise Input/Output (I/O)
-
-## Bytewise I/0
-
-The smallest unit of data that can be written to disk is a *byte*, which is a chunk of 8 *bits*.
-
-In most languages, we can create an "output stream" that handles filling the buffer, writing to disk, etc. for us on its own. Below is a typical workflow of **writing** some *bytewise* data from **memory** to **disk**,
-
-The basic workflow for **writing** *bytes* to disk is as follows:
-
-- Write bytes to buffer, one byte at a time
-- Once the buffer is full, write the entire buffer to disk and clear the buffer (i.e., "flush" the buffer)
-- Repeat
-
-Like with writing from disk, in most languages, one can create an "input stream" that handles reading from disk, filling the buffer, etc. Below is a typical workflow of **reading** some *bytewise* data from **disk** to **memory**:
-
-<img src="https://imgur.com/FjvDJUh.png" style="zoom:50%;" />
-
-## Bitwise I/O
-
-The process of reading and writing data to and from disk *bit*-wise (as opposed to traditional I/O, which is *byte*-wise)
-
-The basic workflow for **writing** *bits* to disk is as follows:
-
-- Write bits to bitwise buffer, one bit at a time
-- Once the bitwise buffer is full, write the bitwise buffer (which is 1 byte) to the bytewise buffer and clear the bitwise buffer (i.e., "flush" the bitwise buffer)
-- Repeat until the bytewise buffer is full
-- Once the bytewise buffer is full, write the entire bytewise buffer to disk and clear the bytewise buffer (i.e., "flush" the bytewise buffer)
-- Repeat from the beginning
-
-<img src="https://imgur.com/BbT1OmT.png" style="zoom:50%;" />
-
-
-
-## Reading from a Bitwise Buffer
-
-
-
-
-
-## Writing to a Bitwise Buffer
-
-
-
-## Question
-
-### Bitwise operations
-
-Consider this method:
-
-```
-// Returns true if the nth bit is set to 1, false otherwise.
-// Count from the most significant bit,
-// so 0xF0 returns true for N=0 and false for N=7
-bool getNthBit(unsigned char c, unsigned char N) {
-  return ???
-}
-```
-
-Which expression(s) correctly fill the `???`? Remember that true is any nonzero value.
-
-(c >> (7 - N)) & 1;
-(c >> (7 - N)) == 1;
-(c & (7 - N)) >> 1;
-(c == (7 - N)) >> 1;
-c & (1 << (7 - N));
-c & (1 << N);
-None of the above
-
-Ans: AE
-
-Which of the following input(s) demonstrates that ALL the wrong answers above actually produce the wrong answer? (That is, it would return the wrong result for all of the incorrect options above).
-
-c = 0x01, N = 0
-c = 0xF0, N = 0
-c = 0xF0, N = 3
-c = 0xF0, N = 4
-None of the above
-
-Ans: C
-
-<font color=red>need to find the explaination. </font>
-
-
-
-# Lecture 22: Graphs and Graph Representation 
-
-## Graphs
-
-Formally, a graph consists of the following:
-
-- A set of elements called **nodes** (or **vertices**)
-- A set of connections between pairs of nodes called **edges**
-
-**Graph**: Collection of nodes and edges
-
-**Node**(aka Vertex): A single entity
-
-**Edge**: A relationship between a pair of nodes
-
-### Directed vs. Undirected
-
-**Directed**: An edge (u,v) is from u to v, not v to u
-
-**Undirected**: An edge (u,v0 is from u to v and v to u
-
-### Weighted vs. Unweighted
-
-**Weighted**: Each edge has a "weight" ("cost") associated with it
-
-**Unweighted**: Edges do not have weights
-
-### Cycles
-
-**Cycle**: A valid path starting and ending at the same node
-
-### Classes of Graphs
-
-**Unstructed**: A disconnected collection of nodes
-
-**Sequential**: An ordered collection of connected nodes
-
-**Hierachical**: A ranked collection of connected nodes
-
-**Structured**: A collection of both connected and disconnected nodes
-
-**Multigraph**: Graph in which a pair of nodes may have multiple distinct edges
-
-## Graph Representation
-
-### Adjacency matrix
-
-<img src="https://imgur.com/AF6RX6M.png" style="zoom:50%;" />
-
-- Space complexity: O(|V|^2)
-
-### Adjacency list
-
-<img src="https://imgur.com/M9YGcEE.png" style="zoom:50%;" />
-
-- Space complexity: O(|V|+|E|)
-- Not ideal for **dense** graphs.
-
-# Lecture 23: Breadth First Search (BFS) and Depth First Search (DFS)
-
-## Breadth First Search
-
-1. Add (0, start) to queue
-2. While the queue is not empty:
-   1. Pop (d, curr) from the queue 
-   2. If curr has not been visited:
-      1. Mark curr as visited with distance d
-      2. For all edges (curr, w):
-         1. If w has not been visited, add (d+1,w) to queue
-
-```python
-BFSShortestPath(u,v):
-    q = an empty queue
-    add (0,u) to q // (0,u) -> (length from u, current vertex)
-    while q is not empty:
-        (length,curr) = q.dequeue()
-        mark curr as visited
-        if curr == v: // if we have reached the vertex we are searching for
-            return length
-        for all outgoing edges (curr,w) from curr: // otherwise explore all neighbors
-            if w has not yet been visited:
-                add (length+1,w) to q
-    return "FAIL" // if I reach this point, then no path exists from u to v
-```
-
-- Worst-case time complexity: O(|V|+|E|)
-
-## Depth First Search
-
-1. Add start to stack
-2. While the stack is not empty:
-   1. Pop curr from the stack
-   2. If curr has not been visited
-      1. Mark curr as visited 
-      2. For all edges (curr, w):
-         1. If w has not been visited, add w to stack
-
-```python
-DFS(u,v):
-    s = an empty stack
-    push (0,u) to s // (0,u) -> (length from u, current vertex)
-    while s is not empty:
-        (length,curr) = s.pop()
-        if curr == v: // if we have reached the vertex we are searching for
-            return length
-        for all outgoing edges (curr,w) from curr: // otherwise explore all neighbors
-            if w has not yet been visited:
-                add (length+1,w) to s
-    return "FAIL" // if I reach this point, then no path exists from u to v
-```
-
-```python
-DFSRecursion(s): // s is the starting vertex
-    mark s as explored 
-    for each unexplored neighbor v of s:
-        DFSRecursion(v) 
-```
-
-Worst-case time complexity: O(|V|+|E|)
 ## The const Keyword
 
 ### const and Pointers
@@ -1489,3 +1217,277 @@ find(w):
         bottom = L2F[j]
     return all positions in original string corresponding to First[top,bottom]
 ```
+
+# Lecture 19: Coding Trees and Entropy
+
+## Information vs. Data	
+
+- Information: Content of some message, tell us detail(s) about some system(s)
+
+- Data: Raw unit of information, representation (or encoding) of information
+
+## Entropy
+
+- Entropy: Mesaure of disorder (non-uniformity) of a system
+- Shannon Entropy: Expected value (average) of the information contained in some data
+
+# Lecture 20: Huffman Coding
+
+## Prefix Codes
+
+- Prefix Codes: An encoding in which no symbol is represented by a code that is a prefix of the code representing another symbol
+
+<img src="https://imgur.com/J7uDhYY.png" style="zoom:50%;" />
+
+>  Letter located at the leaves
+
+## Huffman Coding
+
+We have a set of *n* possible items and we want to represent them uniquely. We could construct a **balanced binary tree** of height ⌈log₂(*n*)⌉
+
+#### Which of the following statements about Huffman compression are true?
+
+A header must be added to the compressed file to provide enough information so that the recipient can reconstruct the same coding tree that was used to encode the file
+
+The Huffman algorithm always generates a balanced binary tree to ensure ⌈log₂(n)⌉ symbol encoding length
+
+The Huffman algorithm takes into account symbol frequencies when deciding how to encode symbols
+
+Ans: AC
+
+## Huffman Tree Construction
+
+1. Compute the frequencies of all symbols that appear in the input
+2. Start with a "forest" of single-node trees, one for each symbol that appeared in the input (ignore symbols with count 0, since they don't appear at all in the input)
+3. While there is more than 1 tree in the forest:
+   1. Remove the two trees (T1 and T2) from the forest that have the lowest count contained in their roots
+   2. Create a new node that will be the root of a new tree. This new tree will have T1 and T2 as left and right subtrees. The count in the root of this new tree will be the sum of the counts in the roots of T1 and T2. Label the edge from this new root to T1 as "1" and label the edge from this new root to T2 as "0"
+   3. Insert this new tree in the forest, and go back to the While statement
+4. Return the one tree in the forest as the Huffman tree
+
+
+
+Message: AAAAABBAHHBCBGCCC
+
+<img src="https://imgur.com/iUZR20m.png" style="zoom:50%;" />
+
+
+
+## Huffman Tree Message Encoding
+
+For each symbol in the message, output the sequence of bits given by 1's and 0's on the path from the root of the tree to that symbol. 
+
+## Huffman Tree Message Decoding
+
+1. Start with the first bit in the coded message, and start with the root of the code tree
+
+2. As you read each bit, move to the left or right child of the current node, matching the bit just read with the label on the edge
+
+3. When you reach a leaf, output the symbol stored in the leaf, return to the root, and continue
+
+
+
+#  Lecture 21: Bitwise Input/Output (I/O)
+
+## Bytewise I/0
+
+The smallest unit of data that can be written to disk is a *byte*, which is a chunk of 8 *bits*.
+
+In most languages, we can create an "output stream" that handles filling the buffer, writing to disk, etc. for us on its own. Below is a typical workflow of **writing** some *bytewise* data from **memory** to **disk**,
+
+The basic workflow for **writing** *bytes* to disk is as follows:
+
+- Write bytes to buffer, one byte at a time
+- Once the buffer is full, write the entire buffer to disk and clear the buffer (i.e., "flush" the buffer)
+- Repeat
+
+Like with writing from disk, in most languages, one can create an "input stream" that handles reading from disk, filling the buffer, etc. Below is a typical workflow of **reading** some *bytewise* data from **disk** to **memory**:
+
+<img src="https://imgur.com/FjvDJUh.png" style="zoom:50%;" />
+
+## Bitwise I/O
+
+The process of reading and writing data to and from disk *bit*-wise (as opposed to traditional I/O, which is *byte*-wise)
+
+The basic workflow for **writing** *bits* to disk is as follows:
+
+- Write bits to bitwise buffer, one bit at a time
+- Once the bitwise buffer is full, write the bitwise buffer (which is 1 byte) to the bytewise buffer and clear the bitwise buffer (i.e., "flush" the bitwise buffer)
+- Repeat until the bytewise buffer is full
+- Once the bytewise buffer is full, write the entire bytewise buffer to disk and clear the bytewise buffer (i.e., "flush" the bytewise buffer)
+- Repeat from the beginning
+
+<img src="https://imgur.com/BbT1OmT.png" style="zoom:50%;" />
+
+
+
+## Reading from a Bitwise Buffer
+
+
+
+
+
+## Writing to a Bitwise Buffer
+
+
+
+## Question
+
+### Bitwise operations
+
+Consider this method:
+
+```
+// Returns true if the nth bit is set to 1, false otherwise.
+// Count from the most significant bit,
+// so 0xF0 returns true for N=0 and false for N=7
+bool getNthBit(unsigned char c, unsigned char N) {
+  return ???
+}
+```
+
+Which expression(s) correctly fill the `???`? Remember that true is any nonzero value.
+
+(c >> (7 - N)) & 1;
+(c >> (7 - N)) == 1;
+(c & (7 - N)) >> 1;
+(c == (7 - N)) >> 1;
+c & (1 << (7 - N));
+c & (1 << N);
+None of the above
+
+Ans: AE
+
+Which of the following input(s) demonstrates that ALL the wrong answers above actually produce the wrong answer? (That is, it would return the wrong result for all of the incorrect options above).
+
+c = 0x01, N = 0
+c = 0xF0, N = 0
+c = 0xF0, N = 3
+c = 0xF0, N = 4
+None of the above
+
+Ans: C
+
+<font color=red>need to find the explaination. </font>
+
+
+
+# Lecture 22: Graphs and Graph Representation 
+
+## Graphs
+
+Formally, a graph consists of the following:
+
+- A set of elements called **nodes** (or **vertices**)
+- A set of connections between pairs of nodes called **edges**
+
+**Graph**: Collection of nodes and edges
+
+**Node**(aka Vertex): A single entity
+
+**Edge**: A relationship between a pair of nodes
+
+### Directed vs. Undirected
+
+**Directed**: An edge (u,v) is from u to v, not v to u
+
+**Undirected**: An edge (u,v0 is from u to v and v to u
+
+### Weighted vs. Unweighted
+
+**Weighted**: Each edge has a "weight" ("cost") associated with it
+
+**Unweighted**: Edges do not have weights
+
+### Cycles
+
+**Cycle**: A valid path starting and ending at the same node
+
+### Classes of Graphs
+
+**Unstructed**: A disconnected collection of nodes
+
+**Sequential**: An ordered collection of connected nodes
+
+**Hierachical**: A ranked collection of connected nodes
+
+**Structured**: A collection of both connected and disconnected nodes
+
+**Multigraph**: Graph in which a pair of nodes may have multiple distinct edges
+
+## Graph Representation
+
+### Adjacency matrix
+
+<img src="https://imgur.com/AF6RX6M.png" style="zoom:50%;" />
+
+- Space complexity: O(|V|^2)
+
+### Adjacency list
+
+<img src="https://imgur.com/M9YGcEE.png" style="zoom:50%;" />
+
+- Space complexity: O(|V|+|E|)
+- Not ideal for **dense** graphs.
+
+# Lecture 23: Breadth First Search (BFS) and Depth First Search (DFS)
+
+## Breadth First Search
+
+1. Add (0, start) to queue
+2. While the queue is not empty:
+   1. Pop (d, curr) from the queue 
+   2. If curr has not been visited:
+      1. Mark curr as visited with distance d
+      2. For all edges (curr, w):
+         1. If w has not been visited, add (d+1,w) to queue
+
+```python
+BFSShortestPath(u,v):
+    q = an empty queue
+    add (0,u) to q // (0,u) -> (length from u, current vertex)
+    while q is not empty:
+        (length,curr) = q.dequeue()
+        mark curr as visited
+        if curr == v: // if we have reached the vertex we are searching for
+            return length
+        for all outgoing edges (curr,w) from curr: // otherwise explore all neighbors
+            if w has not yet been visited:
+                add (length+1,w) to q
+    return "FAIL" // if I reach this point, then no path exists from u to v
+```
+
+- Worst-case time complexity: O(|V|+|E|)
+
+## Depth First Search
+
+1. Add start to stack
+2. While the stack is not empty:
+   1. Pop curr from the stack
+   2. If curr has not been visited
+      1. Mark curr as visited 
+      2. For all edges (curr, w):
+         1. If w has not been visited, add w to stack
+
+```python
+DFS(u,v):
+    s = an empty stack
+    push (0,u) to s // (0,u) -> (length from u, current vertex)
+    while s is not empty:
+        (length,curr) = s.pop()
+        if curr == v: // if we have reached the vertex we are searching for
+            return length
+        for all outgoing edges (curr,w) from curr: // otherwise explore all neighbors
+            if w has not yet been visited:
+                add (length+1,w) to s
+    return "FAIL" // if I reach this point, then no path exists from u to v
+```
+
+```python
+DFSRecursion(s): // s is the starting vertex
+    mark s as explored 
+    for each unexplored neighbor v of s:
+        DFSRecursion(v) 
+```
+
+Worst-case time complexity: O(|V|+|E|)
