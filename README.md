@@ -1434,6 +1434,7 @@ Formally, a graph consists of the following:
 
 ## Breadth First Search
 
+```python
 1. Add (0, start) to queue
 2. While the queue is not empty:
    1. Pop (d, curr) from the queue 
@@ -1441,6 +1442,7 @@ Formally, a graph consists of the following:
       1. Mark curr as visited with distance d
       2. For all edges (curr, w):
          1. If w has not been visited, add (d+1,w) to queue
+```
 
 ```python
 BFSShortestPath(u,v):
@@ -1461,6 +1463,7 @@ BFSShortestPath(u,v):
 
 ## Depth First Search
 
+``` python
 1. Add start to stack
 2. While the stack is not empty:
    1. Pop curr from the stack
@@ -1468,6 +1471,7 @@ BFSShortestPath(u,v):
       1. Mark curr as visited 
       2. For all edges (curr, w):
          1. If w has not been visited, add w to stack
+```
 
 ```python
 DFS(u,v):
@@ -1491,3 +1495,171 @@ DFSRecursion(s): // s is the starting vertex
 ```
 
 Worst-case time complexity: O(|V|+|E|)
+
+# Lecture 24: Dijkstra's Algorithm
+
+## Dijkstra's Algorithm
+
+- Constantly looking for the lowest-weight paths and seeing which vertices are discovered along the way. 
+
+1. Search for the next shortest path that exists in the graph, and
+2. See which vertex it discovers by taking that shortest path.
+
+### Implementation
+
+```F#
+0. Set all nodes's distances to infinite and start's to 0
+1. Add (0, start) to prioirty queue
+2. While the priority queue is not empty:
+  Pop (d, curr) from priority queue
+  If curr is not done: 
+    Mark curr as done
+    For all edges (curr, w, e):
+      If d+e < w's current distance:
+        w's current distance = d+e
+        w's previous node is curr
+        add (d+e, w) to priority queue
+```
+
+```python
+dijkstra(s):
+    // perform initialization step
+    pq = empty priority queue
+    for each vertex v:
+        v.dist = infinity           // the maximum possible distance from s
+        v.prev = NULL               // we don't know the optimal previous node yet
+        v.done = False              // v has not yet been discovered
+
+    // perform the traversal
+    enqueue (0, s) onto pq          // enqueue the starting vertex
+    while pq is not empty:
+        dequeue (weight, v) from pq
+        if v.done == False:         // if the vertex's min path hasn't been discovered yet
+            v.done = True
+            for each edge (v,w,d):  // (v,w,d) = edge from v to w with edge-weight d
+                c = v.dist + d      // c is the total distance to w through v
+                if c < w.dist:      // if a smaller-weight path has been found
+                                    // (remember, all distances start at infinity!)
+                    w.prev = v      // update the node that comes just before w in the path from s to w
+                    w.dist = c      // update the distance of the path from s to w
+                    enqueue (c, w) onto pq
+```
+
+### Time Complexity
+
+Worst-case time complexity: O(|V|+|E|log|E|)
+
+
+
+# Lecture 25: Minimum Spanning Tree
+
+## Spanning Trees
+
+a **spanning tree** for an **undirected graph** *G* is an **undirected graph** that
+
+- contains all the vertices of *G*,
+- contains a subset of the edges of *G*﻿,
+- has no cycles, and
+- is connected (this implies that only connected graphs can have spanning trees).
+
+**Do not need the weight to be non-negative. **
+
+Below is an example of a graph with its spanning tree:
+
+<img src="https://imgur.com/hwaMwVu.png" style="zoom:50%;" />
+
+an **MST** is a spanning tree that minimizes the total sum of edge weights.
+
+## Minimum Spanning Tree: Prim's Algorithms
+
+- **Prim's Algorithm** starts with a single vertex from the original graph and builds the **MST** by iteratively adding <u>the least costly edges that stem from it</u> (very similar to **Dijkstra's Algorithm)**.
+
+### Implementation
+
+**Prim's Algorithm** achieves the steps described previously by using a priority queue of edges sorted by edge weights. However, unlike **Dijkstra's Algorithm**, which had used the *total* path edge weights explored so far to the priority queue for comparison, **Prim's Algorithm** uses *single* edge weights.
+
+```python
+1. Start at any node
+2. Repeat |V|-1 times:
+  1. Find the smallest-weight edge (u,v,c) such that u is in your growing MST and v is not
+  2. Add the edge (u,v,c) to your growing MST
+```
+
+### Time Complexity
+
+Worst-case time complexity: O(|V| + **|E|\* log(|E|)**)
+
+**Better for dense graph. **
+
+## Minimum Spanning Tree: Kruskal's Algorithm
+
+- **Kruskal's Algorithm** starts with a forest of vertices without any edges and builds the **MST** by iteratively adding the least costly edges from the entire graph.
+
+### Implementation
+
+**Kruskal's Algorithm** is very similar to **Prim's Algorithm**. However, the major difference is that **Kruskal's Algorithm** starts with a "forest of nodes" (basically the original graph except with no edges) and iteratively adds back the edges based on <u>which edges have the lowest weight</u>.
+
+```python
+1. Repeat |E| times:
+  1. Find the smallest-weight edge (u,v,c) such that adding it to your growing subgraph will not cause a cycle
+  2. Add the edge to your growing subgraph
+```
+
+### Time Complexity
+
+Worst-case time complexity: O(|V| + **|E|\* log(|E|)**)
+
+
+
+# Lecture 26: Disjoint Sets
+
+## Disjoint Set ADT
+
+- Union: Given two elements u and v, merge their set (Find the element's sentinel nodes, and make one the child of the other )
+- Find: Given an element u, return its set (Return the element's sentiel node)
+
+Disjoint Set is also commonly referred to as a "Union-Find" data type. Disjoint Sets can be very efficiently implemented using the **Up-Tree** data structure, which in essence is simply a graph in which all nodes have a single "parent" pointer. Nodes that do not have a parent (i.e., the roots of their respective trees) are called **sentinel nodes**, and each sentinel node represents a single set.
+
+Node still point to its parent unless doing `union`
+
+## Union by Size
+
+the sentinel node of the *smaller* set (i.e., the set with less elements) gets attached to the sentinel node of the *larger* set.
+
+### Time Complexity
+
+worst-case time complexity of a "find" operation:  **O(log** ***n*****)**
+
+(the same as the worst-case height of a balanced binary tree)
+
+## Union by Height
+
+the sentinel node of the *shorter* set (i.e., smaller height) gets attached to the sentinel node of the *taller* set.
+
+## Path Compression
+
+As we traverse the tree to return the sentinel node, we re-attach each vertex along the way directly to the root.
+
+# Lecture 27: Classes of Computational Complexity
+
+## Classes of Computational Complexity
+
+- P: Problems that can be solved in O(n^c)
+- NP(***N***ondeterministic ***P***olynomial time): Problems that can be verified in O(n^c)
+  - verified: can verify the answer for correctness in polynomial time
+  - P is a subset of NP
+- NP-Hard: Problems at least as hard as the hardest problem in NP
+- NP-Complete: The intersection of NP and NP-Hard
+  - The hardest problems in NP
+
+## P vs. NP
+
+P: can be solved in polynomial time
+
+NP: can be verfied in polynomial time
+
+NP-Complete: can be verfied in polynomial time
+
+NP-Hard: can not be solved or verified 
+
+<img src="https://imgur.com/BYM0Kg3.png" style="zoom:50%;" />
